@@ -1,0 +1,70 @@
+{% extends "page.twig" %}
+{% set pageTitle = report.name %}
+
+
+{% block body %}
+    <main>
+
+        {% for table in data %}
+
+        <div class="grid">
+            {% include "pageSpinner.html.twig" %}
+            <div class="table-responsive table-no-border">
+                <table id="report-{{ report.id }}" class="table data-table grid-table table-light report">
+                    <thead>
+                        <tr>
+                            {% for column in columns %}
+                                {% if not column.hidden %}
+                                    <th {% if column.style %}style="{{ column.style }}"{% endif %}>
+                                        {{ column.name }}
+                                    </th>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in table %}
+
+                            <tr>
+                                {% for column in columns %}
+                                    {% set columnMapValue =  attribute(columnMap, column.key) %}
+                                    {% set columnMapArray = columnMapValue | split(';') %}
+
+                                    {% if not column.hidden %}
+                                        <td> {{ columnKey }}
+                                            {% set includedValues = '' %}
+                                            {% for subRow in row %}
+                                                {% set item = subRow %}
+
+
+
+                                                {% set thisValue = attribute(subRow, column.key) %} {# function to make this turn into row.key_of_value #}
+
+                                                {% set columnIdentifierKey =  column.key ~ '__columnIdentifier' %}
+
+                                                {% set columnIdentifier = attribute(subRow, columnIdentifierKey) %}
+
+                                                {% if columnIdentifier not in includedValues %}
+                                                    {% set includedValues = includedValues ~ '|' ~ columnIdentifier %}
+{#                                                    {{ includedValues }}#}
+                                                    {% if column.format %}
+                                                        {{ include(template_from_string(column.format)) }}
+                                                    {% else %}
+                                                        {{ thisValue }}
+                                                    {% endif %}
+
+                                                {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endfor %}
+    </main>
+
+{% endblock %}

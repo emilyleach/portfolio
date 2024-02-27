@@ -1,0 +1,47 @@
+select  p.firstName AS 'Student First Name', p.lastName AS 'Student Last Name', p.externalId AS 'Student ID',
+        j_dept_av.value as 'Department', ad.name AS 'Current Course', av.value AS 'Course Section',
+        c_p.firstName AS 'Chair First Name', c_p.lastName AS 'Chair Last Name',
+        irb_status.name as 'IRB Status', irb_f.name as 'IRB Type',
+        comp_status.name AS 'Comprehensive Exam Status'
+from Journeys j
+
+JOIN People p ON p.id = j.personId
+LEFT JOIN Accomplishments a on j.id = a.journeyId
+JOIN AttributeHolders ah on a.id = ah.id
+JOIN Statuses status on ah.statusId = status.id AND status.name LIKE 'In_Progress_%'
+JOIN AccomplishmentDefinitions ad ON a.accomplishmentDefinitionId = ad.id AND ad.id = 112
+LEFT JOIN AttributeValues av ON a.id = av.entityId
+JOIN Attributes attribute ON av.attributeId = attribute.id AND attribute.attributeKey = 'section'
+
+LEFT JOIN AttributeValues j_av ON j.id = j_av.entityId
+JOIN Attributes j_attr ON j_av.attributeId = j_attr.id AND j_attr.attributeKey = 'chair'
+LEFT JOIN PEOPLE c_p ON j_av.value = c_p.id
+
+LEFT JOIN AttributeValues j_dept_av ON j.id = j_dept_av.entityId
+JOIN Attributes j_dept_attr ON j_dept_av.attributeId = j_dept_attr.id AND j_dept_attr.attributeKey = 'department'
+
+JOIN Accomplishments irb_a on j.id = irb_a.journeyId
+JOIN AttributeHolders irb_ah on irb_a.id = irb_ah.id
+LEFT JOIN Statuses irb_status on irb_ah.statusId = irb_status.id
+
+LEFT JOIN FormSubmissions irb_fs on irb_fs.accomplishmentId = irb_a.id
+            AND ((SELECT TOP 1 fs.id from AttributeHolders ah
+                 JOIN FormSubmissions fs ON ah.id = fs.id
+                 JOIN Accomplishments acc on fs.accomplishmentId = acc.id
+                 JOIN Journeys j on acc.journeyId = j.id
+                 where acc.id = irb_a.id ORDER BY ah.createdDateTime DESC)
+                = irb_fs.id)
+LEFT JOIN Forms irb_f on irb_fs.formId = irb_f.id
+LEFT JOIN AttributeHolders irb_fs_ah on irb_fs.id = irb_fs_ah.id
+
+JOIN Accomplishments comp_a on j.id = comp_a.journeyId
+JOIN AttributeHolders comp_ah on comp_a.id = comp_ah.id
+LEFT JOIN Statuses comp_status on comp_ah.statusId = comp_status.id
+
+
+WHERE j.state = 'Active'
+  AND  irb_a.accomplishmentDefinitionId = 114
+  AND  comp_a.accomplishmentDefinitionId = 113
+
+
+

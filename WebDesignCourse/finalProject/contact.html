@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>If You Give A Kid Yarn</title>
+        <link href="final.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <header>
+            <img src="header.jpg" alt="">
+        </header>
+        <nav class="horizontal">
+            <a id="navicon" href="#"><img src="tf_navicon.png" alt="" /></a>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="services.html">Our Services</a></li>
+                <li><a href="finished.html">Finished Products</a></li>
+                <li><a href="contact.html">Contact Us</a></li>
+            </ul>
+        </nav>
+        <main>
+            <h1>Contact Us</h1>
+            <p>We'd love to hear from you! Please fill out this form to contact us to set up an order!<br></p>
+            <p>***Must be over 18 to place an order***</p>
+            <form id="form" method="post" action="http://shearer.ksshosting.com/itss232/process.php">
+                <fieldset>
+                    <p>
+                        <label>Name * </label>
+                        <input type="text" name="name" id="name" required />
+                    </p>
+                    <p>
+                        <label>Address Line 1 * </label>
+                        <input type="text" name="address1" id="address1" required />
+                    </p>
+                    <p>
+                        <label>Address Line 2 </label>
+                        <input type="text" name="address2" id="address2" />
+                    </p>
+                    <p>
+                        <label>City * </label>
+                        <input type="text" name="city" id="city" required />
+                    </p>
+                    <p>
+                        <label>State * </label>
+                        <select name="state" id="state" required>
+                            <option value="" selected disabled hidden>Choose Your State</option>
+                            <option value="AL">AL</option>
+                            <option value="AK">AK</option>
+                            <option value="AR">AR</option>	
+                            <option value="AZ">AZ</option>
+                            <option value="CA">CA</option>
+                            <option value="CO">CO</option>
+                            <option value="CT">CT</option>
+                            <option value="DC">DC</option>
+                            <option value="DE">DE</option>
+                            <option value="FL">FL</option>
+                            <option value="GA">GA</option>
+                            <option value="HI">HI</option>
+                            <option value="IA">IA</option>	
+                            <option value="ID">ID</option>
+                            <option value="IL">IL</option>
+                            <option value="IN">IN</option>
+                            <option value="KS">KS</option>
+                            <option value="KY">KY</option>
+                            <option value="LA">LA</option>
+                            <option value="MA">MA</option>
+                            <option value="MD">MD</option>
+                            <option value="ME">ME</option>
+                            <option value="MI">MI</option>
+                            <option value="MN">MN</option>
+                            <option value="MO">MO</option>	
+                            <option value="MS">MS</option>
+                            <option value="MT">MT</option>
+                            <option value="NC">NC</option>	
+                            <option value="NE">NE</option>
+                            <option value="NH">NH</option>
+                            <option value="NJ">NJ</option>
+                            <option value="NM">NM</option>			
+                            <option value="NV">NV</option>
+                            <option value="NY">NY</option>
+                            <option value="ND">ND</option>
+                            <option value="OH">OH</option>
+                            <option value="OK">OK</option>
+                            <option value="OR">OR</option>
+                            <option value="PA">PA</option>
+                            <option value="RI">RI</option>
+                            <option value="SC">SC</option>
+                            <option value="SD">SD</option>
+                            <option value="TN">TN</option>
+                            <option value="TX">TX</option>
+                            <option value="UT">UT</option>
+                            <option value="VT">VT</option>
+                            <option value="VA">VA</option>
+                            <option value="WA">WA</option>
+                            <option value="WI">WI</option>	
+                            <option value="WV">WV</option>
+                            <option value="WY">WY</option>
+                        </select>
+                    </p>
+                    <p>
+                        <label>Zip Code * </label>
+                        <input type="text" name="zip" id="zip" placeholder="nnnnn (-nnnn)" required pattern="^\d{5}(-\d{4})?$"  />
+                    </p>
+                    <p>
+                        <label>Phone Number * </label>
+                        <input type="tel" name="phone" id="phone" placeholder="(nnn) nnn-nnnn" 
+                            required pattern="^\d{10}$|^(\(\d{3}\)\s*)?d{3}[\s-]?\d{4}$"  />
+                    </p>
+                    <p>
+                        <label>Email * </label>
+                        <input type="email" name="email" id="email" required />
+                    </p>
+                    <p>
+                        <label>Birthdate * </label>
+                        <input type="date" name="bdate" id="bdate" required />
+                    </p>
+                    <p>
+                        <label>Where did you hear about me?</label>
+                        <select multiple name="referrer" id="referrer" >
+                            <option value="Google">Google</option>
+                            <option value="Bing">Bing</option>
+                            <option value="Facebook">Facebook</option>
+                            <option value="Word of Mouth">Word of Mouth</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </p>
+                    <p>
+                        Would you recommend this site to others?<br>
+                        <input type="radio" name="recommend" id="rYes"><label for="rYes" class="radio">Yes</label>
+                        <input type="radio" name="recommend" id="rNo"><label for="rNo" class="radio">No</label>
+                    </p>
+                    <p>
+                        <label for="comments">Questions/Comments</label>
+                        <textarea name="comments" id="comments" cols="50" rows="5"></textarea>
+                    </p>
+                    <p>
+                        <input type="submit" value="Submit Form" id="submit" name="submit">
+                        <input type="reset" value="Cancel" id="reset" name="reset">
+                    </p>
+                </fieldset>
+            </form>
+        </main>
+        <footer>
+            &copy;April 18, 2022 | <a href="https://www.instagram.com/ifyougiveakidyarn/"><img class="insta" src="Instagram_logo_2016.jpg" alt="Instagram"></a> | <a href="mailto:ifyougiveakidyarn@gmail.com">ifyougiveakidyarn@gmail.com</a> | If You Give A Kid Yarn
+        </footer>
+    </body>
+</html>

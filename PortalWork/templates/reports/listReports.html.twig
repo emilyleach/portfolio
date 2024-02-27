@@ -1,0 +1,42 @@
+{% extends "page.twig" %}
+{% set pageTitle = 'Reports' %}
+
+{% block body %}
+    <main>
+        {% include "pageSpinner.html.twig" %}
+        <table class="table data-table">
+            <thead>
+                <tr>
+                    <th>Report Title</th>
+                    <th class="no-sort no-filter">Edit</th>
+                    <th class="no-sort no-filter">Permissions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for report in reportList %}
+                {% if isGranted(['REPORT_VIEW'], report) %}
+                    <tr>
+                        <td style="color: #003B70">
+                            <a href="/report/{{ report.id }}/view">
+                                {{ report.title }}
+                            </a>
+                        </td>
+                        {% if  isGranted(['REPORT_EDIT'], report)%}
+                            <td><a href="/report/{{ report.id }}/edit" class="table-action-icon"><i class="fa-regular fa-pen-to-square"></i></a></td>
+                            <td><a href="/role/assignment/{{report.id}}" class="table-action-icon"><i class="fa-solid fa-lock"></i></a></td>
+                        {% else %}
+                            <td></td>
+                            <td></td>
+                        {% endif %}
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+        {% if  isGranted(['REPORT_EDIT'])%}
+            <a class="btn btn-primary" href="/report/add">Add a Report</a>
+        {% endif %}
+
+    </main>
+{% endblock %}

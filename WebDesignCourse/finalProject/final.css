@@ -1,0 +1,294 @@
+@charset "utf-8";
+
+@import url("printing.css") print;
+html{
+    background-color: rgb(236, 203, 225);
+}
+body{
+    font-family: Verdana, Geneva, sans-serif;
+    color:rgb(91,91,91);
+    background-color: white;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+a#navicon{
+    display: none;
+}
+nav ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+header{
+    text-align: center;
+    padding: 20px;
+}
+header>img{
+    width: 100%;
+}
+h1{
+    color: rgb(136, 78, 163);
+}
+h2{
+    color: rgb(143, 104, 162);
+}
+h1, h2{
+    text-shadow: 4px 6px 5px rgb(225, 184, 223);
+}
+h2{
+    font-size: 1.3em;
+}
+nav a:hover{
+    background-color: rgb(224, 196, 247);
+    color: rgb(25, 2, 174);
+    font-size: 1.2em;
+    transition: background-color 0.5s ease-in 0.2s, color 0.5s ease-in 0.2s, font-size 1s ease;
+}
+main{
+    margin-top: 70px;
+}
+body>footer{
+    clear: both;
+    background-color: rgb(169, 202, 236);
+    color: rgb(48, 1, 136);
+    font-weight: bold;
+    font-size: 0.9em;
+    line-height: 3em;
+    text-align: center;
+    margin-top: 10px;
+    padding: 10px;
+}
+ul{list-style-type: square;}
+
+/*Flexbox styles for Vacation images */
+div.gallery{
+    display: flex;
+    flex-flow:wrap;
+}
+div.imgGallery{
+    flex: 23%;
+    max-width: 25%;
+    padding: 0 4px;
+}
+div > img{
+    max-width:100%;
+}
+
+/* Table Styles */
+table {
+    width:100%;
+    background-color: rgb(255, 255, 255);
+    border: 5px double rgb(178, 205, 243) ;
+    border-collapse: collapse;
+    border-spacing: 5px;
+}
+th, td {
+    height: 40px;
+    border: 2px solid rgb(119, 119, 119);
+    padding: 10px;
+}
+thead, tfoot {
+    background-color: rgb(244, 196, 233);
+    color:black;
+}
+tbody tr:nth-of-type(even){
+    background-color: rgb(202, 222, 243);
+}
+tfoot{
+    text-align: center;
+}
+main>hr{
+    clear: both;
+}
+/* mobile flexbox query */
+@media only screen and (max-width: 1100px){
+    div.imgGallery{
+        flex: 48%;
+        max-width: 50%;
+    }
+}
+/* mobile media query */
+@media only screen and (max-width: 768px){
+    main>img{
+        width:90%;
+        float: none;
+    }
+    body{
+        width:100%;
+        margin: 0;
+    }
+    a#navicon{
+        display: block;
+    }
+    nav.horizontal ul {
+        display: none;
+    }
+    a#navicon:hover+ul, nav.horizontal ul:hover {
+        display: block;
+    }
+    nav li{
+        display: block;
+        width: 100%;
+        float: none;
+        font-size: x-large;
+    }
+    nav a{
+        display: block;
+        background-color: rgb(169, 202, 236);
+        line-height: 2.8em;
+        text-decoration: none;
+        text-align: center;
+        color: rgb(48, 1, 136);
+        border-bottom: 1px solid black;
+    }
+    div.imgGallery{
+        flex: 100%;
+        max-width: 100%;
+    }
+    table, tbody, tr, td, th {
+        display:block;
+    }
+    thead, tfoot {
+        display: none;
+    }
+    tbody td{
+        position:relative;
+        padding-left: 40%;
+    }
+    td::before {
+        content:attr(data-label);
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        padding: 5px;
+        width: 40%;
+    }
+    /* Mobile Forms */
+    form{
+        width: 100%;
+        font-size: large;
+    }
+    fieldset{
+        width: 100%;
+        padding: 5px;
+        margin: 0;
+    }
+    input, select{
+        display:block;
+        position: inherit;
+        padding: 5px;
+        height: 50px;
+        width: 90%;
+    }
+    label{
+        display: block;
+        position: inherit;
+        height: 50px;
+        width: 90%;
+    }
+    input[type="submit"], input[type="reset"]{
+        float: none;
+        width: 90%;
+        margin: 10px;
+        font-size: 1.2em;
+    }
+    img.insta{
+        max-width: 5%;
+    }
+}
+
+/* Validation Styles */
+input:focus, select:focus, textarea:focus {
+    background-color: rgb(220, 255, 220);
+}
+input:focus:valid{
+    background: rgb(220, 255, 220) url(rb_valid.png) bottom right/contain no-repeat;
+}
+input:focus:invalid{
+    background: rgb(255, 232, 233) url(rb_invalid.png) bottom right/contain no-repeat;
+}
+
+/* desktop media query */
+@media only screen and (min-width: 769px){
+    html{
+        background-image: url(bg.jpg);
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center center;
+        background-size: cover;
+    }
+    nav li{
+        display: block;
+        width: 25%;
+        float: left;
+    }
+    nav a{
+        display: block;
+        background-color: rgb(169, 202, 236);
+        line-height: 2.8em;
+        text-decoration: none;
+        text-align: center;
+        color: rgb(48, 1, 136);
+    }
+    main{
+        padding: 20px;
+        margin-top: 35px;
+    }
+    main>img{
+        width:25%;
+        padding: 25px;
+        float: right;
+    }
+    /* For Forms */
+    form{
+        width: 90%;
+    }
+    fieldset{
+        width: 90%;
+        padding: 5px;
+        margin: 0px 10px 10px 0px;
+    }
+    input, select{
+        display:block;
+        position: relative;
+        left: 50%;
+        padding: 5px;
+        height: auto;
+        width: 40%;
+    }
+    label{
+        display: block;
+        position: absolute;
+        padding: 5px;
+        width: 50%;
+    }
+    input[type="radio"]{
+        display: inline;
+        position: inherit;
+        left: 0;
+        width: auto;
+    }
+    label.radio{
+        display: inline;
+        position: inherit;
+    }
+    input[type="submit"], input[type="reset"]{
+        display: block;
+        float: left;
+        left: 0;
+        text-align: center;
+        width: 40%;
+        padding: 10px;
+        margin-left: 5%;
+        margin-left: 5%;
+        margin-bottom: 10px;
+    }
+    textarea{
+        padding: 10px;
+        margin: 30px;
+    }
+    img.insta{
+        max-width: 2%;
+    }
+}

@@ -1,0 +1,110 @@
+{% macro generateFormElementForAttribute(context, attribute, attributeValues, updateAv = false, editingDisabled = false, canLock = false) %}
+    {% import "macros/formElementMacrosArrayConfig.twig" as formElement %}
+    {% set attr = "attr_" ~ attribute.id %}
+
+    {#  Code to be used for populating previous values #}
+    {% if attributeValues %}
+        {% set attrValues = attributeValues|filter((att_val) => att_val.attribute.id == attribute.id ) %}
+
+        {% set attrValue = attrValues | first %}
+        {% set value = attrValue.value | default('') %}
+
+        {%  if updateAv  %}
+            <input value="{{ attrValue.id }}" type="hidden" name="av_{{ attr }}" id="av_{{ attr }}" >
+        {% endif %}
+    {% endif %}
+
+    {% if attribute.isDeleted == false or value != null %}
+        {% if value == null and attribute.defaultValue != null %}
+            {% set value = attribute.defaultValue %}
+        {% endif %}
+
+        <div class="form-field-attr-{{ attribute.id }} form-field-{{ attribute.fieldType }}"
+            {% if attribute.key %}
+                data-key='{{ attribute.key }}'
+            {% endif %}
+            {% if attribute.optionsObj.visibleIf %}
+                data-visibleIf='{{ attribute.optionsObj.visibleIf|json_encode()|raw }}'
+            {% endif %}
+            >
+
+            {% set attrConfig = {
+                'id': attr,
+                'name': attr,
+                'value': value,
+                'labelText': attribute.title,
+                'instructions': attribute.instructionsNotBlank,
+                'isRequired': attribute.required,
+                'isLockable': canLock,
+                'isLocked': attrValue.isLocked,
+                'isReadOnly': editingDisabled,
+            } %}
+
+            {% if attribute.fieldType == 'file' %}
+                {% set attrConfig = attrConfig|merge({'value': attrValues}) %}
+            {% else %}
+                {% set attrConfig = attrConfig|merge({'value': value}) %}
+            {% endif %}
+
+            {# Begin inputs #}
+            {% if attribute.fieldType == 'text' %}
+                {{ formElement.generateTextInput(attrConfig) }}
+            {% elseif attribute.fieldType == 'email' %}
+                {{ formElement.generateEmailInput(attrConfig) }}
+            {% elseif attribute.fieldType == 'file' %}
+                {% set attrConfig = attrConfig|merge({'isArrayable': true}) %}
+                {{ formElement.generateFileInput(attrConfig) }}
+            {% elseif attribute.fieldType == 'radio' %}
+                {% set attrConfig = attrConfig|merge({'options': attribute.optionsObj.values}) %}
+                {{ formElement.generateRadioInput(attrConfig) }}
+            {% elseif attribute.fieldType == 'url' %}
+                {{ formElement.generateUrlInput(attrConfig) }}
+            {% elseif attribute.fieldType == 'date' %}
+                {{ formElement.generateDateInput(attrConfig) }}
+            {% elseif attribute.fieldType == 'checkboxes' %}
+                {% set attrConfig = attrConfig|merge({'options': attribute.optionsObj.values}) %}
+                {{ formElement.generateCheckboxes(attrConfig) }}
+            {% elseif attribute.fieldType == 'dropdown' %}
+                {% set attrConfig = attrConfig|merge({'options': attribute.optionsObj.values}) %}
+                {{ formElement.generateSelectInput(attrConfig) }}
+            {% elseif attribute.fieldType == 'textarea' %}
+                {{ formElement.generateTextarea(attrConfig) }}
+            {% elseif attribute.fieldType == 'document' %}
+                {{ formElement.generateDocumentEditor(attrConfig) }}
+            {% elseif attribute.fieldType == 'html' %}
+                {{ formElement.generateHtml(attrConfig) }}
+            {% elseif attribute.fieldType == 'definedlist' %}
+                {% set options = definedlist(attribute.optionsObj.listId)|sort((a,b) => a.value <=> b.value) %}
+                {% set attrConfig = attrConfig|merge({'options': options}) %}
+                {{ formElement.generateSelectInput(attrConfig) }}
+            {% elseif attribute.fieldType == 'entity' %}
+                {% if attribute.optionsObj.report %}
+                    {% set options = reportlist(attribute.optionsObj.report, attribute.optionsObj.reportArguments, context) %}
+                {% else %}
+                    {% set options = entitylist(attribute.optionsObj.entityType, attribute.optionsObj.valueFormat) %}
+                {%  endif %}
+
+                {% set attrConfig = attrConfig|merge({'options': options}) %}
+
+                {% set displayFormat = attribute.optionsObj.displayFormat|default('select') %}
+                {% if displayFormat == 'select' %}
+                    {{ formElement.generateSelectInput(attrConfig) }}
+                {% elseif displayFormat == 'radio' %}
+                    {{ formElement.generateRadioInput(attrConfig) }}
+                {% elseif displayFormat == 'checkboxes' %}
+                    {{ formElement.generateCheckboxes(attrConfig) }}
+                {% else %}
+                    Invalid display format.
+                {% endif %}
+            {% elseif attribute.fieldType == 'groupmember' %}
+                {% set list = groupMember(attribute.optionsObj.groupId, attribute.optionsObj.qualifierAttribute, attribute.optionsObj.qualifierValue) %}
+                {% set attrConfig = attrConfig|merge({'options': list}) %}
+                {{ formElement.generateSelectInput(attrConfig) }}
+            {% endif %}
+{#            {{  attrConfig | json_encode }}#}
+        </div>
+    {% endif %}
+{% endmacro generateFormElementForAttribute %}
+
+
+

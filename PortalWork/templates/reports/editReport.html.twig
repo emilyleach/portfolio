@@ -1,0 +1,31 @@
+{% extends "page.twig" %}
+{% import "macros/formElementMacros.twig" as formElement %}
+
+{% set pageTitle = report.name ~ ' | Edit Report' %}
+{% set maxResults = report.maxResults %}
+{% if report.maxResults == 0 %}
+    {% set maxResults = "" %}
+{% endif %}
+
+{% block body %}
+
+    <div class="spinner"><div class="lds-dual-ring"></div></div>
+    <main style="visibility: hidden;">
+        <form action="/report/update" method="POST">
+            <input type="hidden" name="reportId" value="{{ report.id }}">
+            <h1>{{  report.name }}</h1>
+            <div class="properties">
+                {{ formElement.generateTextInput("prop_name", "prop_name", report.name, "Report Name:", "", "", true) }}
+                {{ formElement.generateTextInput("prop_title", "prop_title", report.title, "Report Title:", "", "", true) }}
+                {{ formElement.generateSelectInput("prop_entityTypeId", "prop_entityTypeId", report.entityType.id, entitylist("EntityType","{{ item.name}}","item.name"), "Entity Type:", "", false, true) }}
+                {{ formElement.generateCodeEditor("prop_json", "prop_json", report.jsonConfig, "JSON Config:", "",false,false,false,'json') }}
+                {{ formElement.generateNumberInput("prop_max", "prop_max", maxResults, "Max Results:", "Leave blank for no maximum") }}
+            </div>
+
+            <div class="form-action-buttons">
+                <button class="btn btn-primary submit-button" type="submit" id="submit" name="submit" value="Save Changes">Save Changes</button>
+            </div>
+        </form>
+    </main>
+
+{% endblock %}

@@ -1,0 +1,49 @@
+
+[
+    {
+        "tables":
+        {% for table in data %}
+        [
+            {
+                "rows":
+                [
+                    {% for row in table %}
+                        {   {% set firstDisplayedValue = true %}
+                            {% for column in columns %}
+
+                                {% set columnMapValue =  attribute(columnMap, column.key) %}
+                                {% set columnMapArray = columnMapValue | split(';') %}
+                                {% if not column.hidden %}
+                                    {% if firstDisplayedValue %} {% set firstDisplayedValue = false %} {% else %} , {% endif %}
+
+                                    {% set includedValues = '' %}
+                                    {% for subRow in row %}
+                                        {% set item = subRow %}
+                                        {% set thisValue = attribute(subRow, column.key) %}
+                                        {# function to make this turn into row.key_of_value #}
+                                        {% set columnIdentifierKey =  column.key ~ '__columnIdentifier' %}
+                                        {% set columnIdentifier = attribute(subRow, columnIdentifierKey) %}
+                                        {% if columnIdentifier not in includedValues %}
+                                            {% set includedValues = includedValues ~ '|' ~ columnIdentifier %}
+                                            {% if column.format %}
+                                                "{{ column.name }}" :"{% if not includeHtmlInJson %}{{ include(template_from_string(column.format)) | striptags | trim}}{% else %}{{ include(template_from_string(column.format)) | escape }}{% endif %}" {% if not loop.last %}, {% endif %}
+                                            {% else %}
+                                                "{{ column.name }}" :"{{ thisValue }}" {% if not loop.last %}, {% endif %}
+                                            {% endif %} {#ending format if#}
+                                        {% endif %} {#ending identifier if#}
+                                    {% endfor %} {#ending subRow for loop#}
+
+                                {% endif %} {#ending if column hidden#}
+
+                            {% endfor %} {#ending column in columns for loop#}
+                        }
+                    {% if not loop.last %}, {% endif %}
+                    {% endfor %} {#ending for loop of rows#}
+                ]
+{#                {% if not loop.last %}, {% endif %}#}
+            }
+        ]
+        {% endfor %}
+    }
+]
+
