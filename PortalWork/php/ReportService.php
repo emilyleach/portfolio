@@ -1,9 +1,15 @@
 <?php
 // this service was used to contain all report related functions
 
+namespace App\Service;
+
+
 use Doctrine\ORM\AbstractQuery;
+use HTMLPurifier_Config;
+use HTMLPurifier;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
-use UC\Portal\Model\Report;
+use App\Entity\Report;
+
 
 
 class ReportService
@@ -30,7 +36,7 @@ class ReportService
         $qb = $this->entityManager->createQueryBuilder();
 
         $qb->select('report')
-            ->from('UC\Portal\Model\Report', 'report');
+            ->from('App\Entity\Report', 'report');
 
         $query = $qb->getQuery();
         $result = $query->getResult();
@@ -39,7 +45,7 @@ class ReportService
     }
     public function getReport($reportId): Report
     {
-        $report = $this->entityManager->find('UC\Portal\Model\Report', $reportId);
+        $report = $this->entityManager->find('App\Entity\Report', $reportId);
 
         if($report == null)
         {
@@ -74,7 +80,7 @@ class ReportService
         $report->name = $postVar['prop_name'];
         $report->title = $postVar['prop_title'];
         if ($postVar['prop_entityTypeId'] != '') {
-            $entityService = new \UC\Portal\Service\EntityService($this->entityManager, $this->twig);
+            $entityService = new EntityService($this->entityManager, $this->twig);
             $report->entityType = $entityService->getEntityTypeById($postVar['prop_entityTypeId']);
         }
         $report->jsonConfig = $postVar['prop_json'];
@@ -111,6 +117,7 @@ class ReportService
         foreach($columnConfig as $element)
         {
             $columns[$element->key] = $startTable;
+
             if(isset($element->values))
             {
                 $nestedRows = $this->generateColumnMap($element->values,$startTable . ";" . $element->key);
@@ -124,29 +131,19 @@ class ReportService
     public function sendReportToProcesses(Report $report, $params)
     {
         $configObject = json_decode($report->jsonConfig);
-
         $columns = $configObject->values;
+        $filters = "";
+        $collectBy = "";
         if (isset($configObject->filter))
         {
             $filters = $configObject->filter;
-        }
-        else
-        {
-            $filters = "";
         }
         if (isset($configObject->collectBy))
         {
             $collectBy = $configObject->collectBy;
         }
-        else
-        {
-            $collectBy = "";
-        }
-
 
         $columnMap = $this->generateColumnMap($columns);
-
-
         $startingModel = $report->entityType->class;
         $columnArrayResults = $this->processValues($columns,"t0", $filters, $params);
 
@@ -185,7 +182,7 @@ class ReportService
             }
         }
 
-        ini_set('xdebug.var_display_max_depth', 99);
+//        ini_set('xdebug.var_display_max_depth', 99);
 
         $fixedReportDisplay = $this->fixReportDisplay($lumpedData, $columnMap);
 
@@ -216,26 +213,27 @@ class ReportService
             {
                 foreach ($queryFilters as $queryFilter)
                 {
-
                     if (isset($queryFilter->value) && $queryFilter->value == $value->key)
                     {
-
+                        $filterValue = "";
                         if (isset($queryFilter->exposeOnUrl) && $queryFilter->exposeOnUrl && isset($params[$queryFilter->key]))
                         {
                             $filterValue = $params[$queryFilter->key];
                         }
-                        else
+                        else if (isset($queryFilter->constant))
                         {
                             $filterValue = $queryFilter->constant;
                         }
-
-                        if (isset($value->property))
+                        if ($filterValue != "")
                         {
-                            $returnValue['filters'][$value->key] = "{$table}.{$value->property} {$queryFilter->comparison} '{$filterValue}'";
-                        }
-                        else
-                        {
-                            $returnValue['filters'][$value->key] = "{$value->key}_av.value {$queryFilter->comparison} '{$filterValue}'";
+                            if (isset($value->property))
+                            {
+                                $returnValue['filters'][$value->key] = "{$table}.{$value->property} {$queryFilter->comparison} '{$filterValue}'";
+                            }
+                            else
+                            {
+                                $returnValue['filters'][$value->key] = "{$queryFilter->value}_av.value {$queryFilter->comparison} '{$filterValue}'";
+                            }
                         }
                     }
                 }
@@ -246,7 +244,6 @@ class ReportService
                 $returnValue['selects'][$value->key] = "{$value->key}.id as {$value->key}__id";
                 if(isset($value->values))
                 {
-
                     $newReturnArray = $this->processValues($value->values,$value->key, $queryFilters, $params);
                     $returnValue = $this->mergeReturnArray($returnValue,$newReturnArray);
                 }
@@ -263,14 +260,7 @@ class ReportService
                     {
                         $filterValue = $filter->constant;
                     }
-                    if (isset($value->property))
-                    {
-                        $returnValue['filters'][$value->key] = "{$value->key}.{$filter->value} {$filter->comparison} {$filterValue}";
-                    }
-                    else
-                    {
-                        $returnValue['filters'][$value->key] = "{$value->key}_av.value {$filter->comparison} {$filterValue}";
-                    }
+                    $returnValue['filters'][$value->key] = "{$value->key}.{$filter->value} {$filter->comparison} {$filterValue}";
                 }
 
             }
@@ -304,7 +294,7 @@ class ReportService
                 if (isset($value->attributeEntity))
                 {
                     $returnValue['subJoins'][$value->key] = [];
-                    $returnValue['subJoins'][$value->key]['class'] = "UC\Portal\Model\\{$value->attributeEntity}";
+                    $returnValue['subJoins'][$value->key]['class'] = "App\\Entity\\{$value->attributeEntity}";
                     $returnValue['subJoins'][$value->key]['condition'] = "{$value->key}_av.value = {$value->key}.id";
                     if(isset($value->values))
                     {
@@ -343,6 +333,8 @@ class ReportService
                         $returnValue['sorts'][$value->sortOrder] = ["{$value->key}_av.value", "ASC"];
                     }
                 }
+//                var_dump($returnValue['sorts']);
+//                die();
             }
         }
 
@@ -385,13 +377,13 @@ class ReportService
         foreach ($columnMetaData['sorts'] as $sortKey=>$sortObject)
         {
             $qb = $qb
-              ->addOrderBy($sortObject[0], $sortObject[1]);
+                ->addOrderBy($sortObject[0], $sortObject[1]);
         }
 
         $qb = $qb
             ->getQuery();
 
-//        $dql = $qb->getDQL();
+        $dql = $qb->getDQL();
 
 //        var_dump($dql);
 //        die();
@@ -412,17 +404,17 @@ class ReportService
                 { // $rowContents is each row in the array of rows that is being combined into one row in the table (0,1,2, etc.)
                     foreach ($columnMap as $columnKey=>$columnMapPart)
                     { // $columnContents is the content inside each column in this row.
-                            $columnMapArray = explode(';',$columnMapPart);
-                            $columnIdentifier = '';
+                        $columnMapArray = explode(';',$columnMapPart);
+                        $columnIdentifier = '';
 
-                            foreach($columnMapArray as $part)
+                        foreach($columnMapArray as $part)
+                        {
+                            $identifierKey = $part . "__id";
+                            if(array_key_exists($identifierKey,$rowContents))
                             {
-                                $identifierKey = $part . "__id";
-                                if(array_key_exists($identifierKey,$rowContents))
-                                {
-                                    $columnIdentifier = $columnIdentifier . $part . $rowContents[$identifierKey] . ";";
-                                }
+                                $columnIdentifier = $columnIdentifier . $part . $rowContents[$identifierKey] . ";";
                             }
+                        }
                         $chunkedData[$tableKey][$tableRowKey][$arrayRowKey]["{$columnKey}__columnIdentifier"] = $columnIdentifier;
 
                     }
@@ -430,9 +422,12 @@ class ReportService
             }
 
         }
+//        var_dump($chunkedData);
+//        die();
         return $chunkedData;
     }
 
 }
+
 
 
