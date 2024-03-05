@@ -61,13 +61,13 @@ $(document).ready(function ()
 $(document).on('change','.fileField', function(){
 
     //Get File data
-    id=$(this).attr('id');
-    name=$(this).attr('name').replace("f_","");
-    var file_data = $('#'+id)[0].files[0];
-    var formData = new FormData();
+    let id=$(this).attr('id');
+    let name=$(this).attr('name').replace("f_","");
+    let file_data = $('#'+id)[0].files[0];
+    let formData = new FormData();
     formData.append(name, file_data);
     formData.append(name, id);
-    var fileHolder = $(this).closest('.form-field').find('.file-holder');
+    let fileHolder = $(this).closest('.form-field').find('.file-holder');
     let filePath = $(this).val();
     let fileName = filePath.split("\\").pop();
 
@@ -86,7 +86,7 @@ $(document).on('change','.fileField', function(){
         data: formData,
         processData: false,
         contentType: false,
-        beforeSend:function(jqXHR, fileName){
+        beforeSend:function(jqXHR){
             /* add url property and get value from settings (or from caturl)*/
             jqXHR.fileName = file_data.name;
         },
@@ -96,14 +96,14 @@ $(document).on('change','.fileField', function(){
             let firstUploadingTextElement = uploadingTextElements.item(0)
             let fileName  = firstUploadingTextElement.innerText.split("Uploading ")[1];
 
-            if(data.status == "success"){
+            if(data.status === "success"){
                 let checkHTML = `<div class="file">
 												<p class="file-name"> ${data.oldFileName} <i class="icon-button delete-file-icon fa-solid fa-trash"></i> <span class="text-success"> File Uploaded Successfully</span</p>
 												<input type="hidden" class="file_uploaded" name="${data.attributeId}[]" id=file1 value="${data.newFileName}|${data.oldFileName}">
 											</div> `;
                 $('#holder_' + data.attributeId).replaceWith(checkHTML);
-                //$fileHolder.find('.uploading-text').last().remove(); // remove only the last uploading text div
-                //$fileHolder.append(checkHTML);
+                //fileHolder.find('.uploading-text').last().remove(); // remove only the last uploading text div
+                //fileHolder.append(checkHTML);
                 $('#f_'+ data.attributeId).removeAttr('required');
             }
             else
@@ -136,22 +136,22 @@ $(document).on('change','.fileField', function(){
 //This listens to the entire document for any 'clicks', and the following function occurs if that click was on a .delete-file-icon
 $(document).on('click','.delete-file-icon', function(){
 
-    $fileHolder = $(this).closest('.file-holder');
-    fileName = $(this).closest('.file').find('.file_uploaded').val();
-    fileInput = $(this).closest('.form-field-file').find("input.fileField");
+    let fileHolder = $(this).closest('.file-holder');
+    let fileName = $(this).closest('.file').find('.file_uploaded').val();
+    let fileInput = $(this).closest('.form-field-file').find("input.fileField");
 
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open("POST", '/dev/fileuploadTest/form/DeleteFile-ServerSide.php', true);
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhr.send("fileName=" + fileName);
 
     $(this).closest('.file').remove();
 
-    $numFiles = $fileHolder.find('.file').length;
-    if($numFiles == 0)
+    $numFiles = fileHolder.find('.file').length;
+    if($numFiles === 0)
     {
-        $fileHolder.find('.no-files').show();
-        if (fileInput.data("required")==true)
+        fileHolder.find('.no-files').show();
+        if (fileInput.data("required")===true)
         {
             fileInput.prop("required", "true");
         }
@@ -209,7 +209,7 @@ function validateTextbox(text){
 
     let textAreaBox = $("."+targetAttr+" .wysiwyg");
 
-    let invalid = (textAreaBox.summernote('isEmpty') && textAreaBox.prop('required') == true);
+    let invalid = (textAreaBox.summernote('isEmpty') && textAreaBox.prop('required') === true);
     if (invalid){
         if($("."+targetAttr).find('.valid-feedback').is(":visible"))
         {
