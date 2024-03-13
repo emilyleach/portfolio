@@ -147,13 +147,13 @@ $(document).on('click','.delete-file-icon', function(){
 
     $(this).closest('.file').remove();
 
-    $numFiles = fileHolder.find('.file').length;
-    if($numFiles === 0)
+    numFiles = fileHolder.find('.file').length;
+    if(numFiles === 0)
     {
         fileHolder.find('.no-files').show();
         if (fileInput.data("required")===true)
         {
-            fileInput.prop("required", "true");
+            $(fileInput).prop("required", "true");
         }
     }
 });
@@ -166,7 +166,7 @@ function validateFileField(fieldDiv)
 
     if (files.length > 0 )
     {
-        inputRequired.removeAttr('required');
+        $(inputRequired).removeAttr('required');
     }
 }
 
@@ -197,9 +197,6 @@ function validateTextbox(text){
     let classArray = $(area).attr("class").split(" ");
     let targetAttr = classArray.find(findFieldAttr);
 
-    //console.log("initial");
-    //console.log(text);
-    //console.log(area);
 
     function findFieldAttr(value, index, array) {
         if (array[index].includes("form-field-attr")) {

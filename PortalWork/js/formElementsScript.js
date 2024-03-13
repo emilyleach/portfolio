@@ -1,5 +1,5 @@
 // this document controls the attributes of elements within forms in the portal
-var editors = [];
+let editors = [];
 
 window.draggingAceEditor = {};
 
